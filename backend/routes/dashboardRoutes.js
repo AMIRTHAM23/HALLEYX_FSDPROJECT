@@ -11,7 +11,7 @@ const {
     loadDashboard
 } = require("../controllers/dashboardController")
 
-// ✅ IMPORTANT: specific routes FIRST
+// specific routes FIRST
 router.get("/load", loadDashboard)
 router.post("/save", saveDashboard)
 
