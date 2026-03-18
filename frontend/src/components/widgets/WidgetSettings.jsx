@@ -188,6 +188,9 @@ function WidgetSettings({ widget, onUpdate, onClose }) {
                         <option>Customer name</option>
                         <option>Email id</option>
                         <option>Address</option>
+                        <option>City</option>
+                        <option>State</option>
+                        <option>Country</option>
                         <option>Order date</option>
                         <option>Product</option>
                         <option>Created by</option>
@@ -243,7 +246,9 @@ function WidgetSettings({ widget, onUpdate, onClose }) {
                         <option>Total amount</option>
                         <option>Status</option>
                         <option>Created by</option>
-                        <option>Duration</option>
+                        <option>City</option>
+                        <option>State</option>
+                        <option>Country</option>
                     </select>
 
                     <select
@@ -257,7 +262,9 @@ function WidgetSettings({ widget, onUpdate, onClose }) {
                         <option>Total amount</option>
                         <option>Status</option>
                         <option>Created by</option>
-                        <option>Duration</option>
+                        <option>City</option>
+                        <option>State</option>
+                        <option>Country</option>
                     </select>
 
                     <label className="block mt-4 font-semibold">Styling</label>
@@ -294,6 +301,9 @@ function WidgetSettings({ widget, onUpdate, onClose }) {
                         <option>Total amount</option>
                         <option>Status</option>
                         <option>Created by</option>
+                        <option>City</option>
+                        <option>State</option>
+                        <option>Country</option>
                     </select>
 
                     <label className="flex items-center mt-2">

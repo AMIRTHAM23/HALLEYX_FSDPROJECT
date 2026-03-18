@@ -53,6 +53,14 @@ const DashboardSelector = ({ currentDashboard, onDashboardChange, onCreateDashbo
         return <div className="text-sm text-gray-600">Loading dashboards...</div>
     }
 
+    const adminDashboards = dashboards.filter(d => d.owner?.role === "admin")
+    const userDashboards = dashboards.filter(d => d.owner?.role !== "admin")
+
+    const formatLabel = (dashboard) => {
+        const roleLabel = dashboard.owner?.role === "admin" ? "Admin" : "User"
+        return `${roleLabel}: ${dashboard.name}`
+    }
+
     return (
         <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
@@ -65,11 +73,24 @@ const DashboardSelector = ({ currentDashboard, onDashboardChange, onCreateDashbo
                     }}
                     className="border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                 >
-                    {dashboards.map(dashboard => (
-                        <option key={dashboard._id} value={dashboard._id}>
-                            {dashboard.name}
-                        </option>
-                    ))}
+                    {adminDashboards.length > 0 && (
+                        <optgroup label="Admin Dashboards">
+                            {adminDashboards.map(dashboard => (
+                                <option key={dashboard._id} value={dashboard._id}>
+                                    {formatLabel(dashboard)}
+                                </option>
+                            ))}
+                        </optgroup>
+                    )}
+                    {userDashboards.length > 0 && (
+                        <optgroup label="User Dashboards">
+                            {userDashboards.map(dashboard => (
+                                <option key={dashboard._id} value={dashboard._id}>
+                                    {formatLabel(dashboard)}
+                                </option>
+                            ))}
+                        </optgroup>
+                    )}
                 </select>
             </div>
 

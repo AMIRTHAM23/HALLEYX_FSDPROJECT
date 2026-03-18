@@ -1,4 +1,5 @@
 const router = require("express").Router()
+const authController = require("../controllers/authController")
 
 const {
     getDashboards,
@@ -12,15 +13,15 @@ const {
 } = require("../controllers/dashboardController")
 
 // specific routes FIRST
-router.get("/load", loadDashboard)
-router.post("/save", saveDashboard)
+router.get("/load", authController.authenticateToken, loadDashboard)
+router.post("/save", authController.authenticateToken, saveDashboard)
 
 // normal routes
-router.get("/", getDashboards)
-router.get("/:id", getDashboard)
-router.post("/", createDashboard)
-router.put("/:id", updateDashboard)
-router.delete("/:id", deleteDashboard)
-router.post("/:id/share", shareDashboard)
+router.get("/", authController.authenticateToken, getDashboards)
+router.get("/:id", authController.authenticateToken, getDashboard)
+router.post("/", authController.authenticateToken, createDashboard)
+router.put("/:id", authController.authenticateToken, updateDashboard)
+router.delete("/:id", authController.authenticateToken, deleteDashboard)
+router.post("/:id/share", authController.authenticateToken, shareDashboard)
 
 module.exports = router

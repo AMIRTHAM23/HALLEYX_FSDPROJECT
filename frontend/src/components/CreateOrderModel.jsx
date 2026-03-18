@@ -11,13 +11,11 @@ function CreateOrderModel({ close, order }) {
         address: "",
         city: "",
         state: "",
-        postalCode: "",
         country: "United States",
         product: "Fiber Internet 300 Mbps",
         quantity: 1,
         unitPrice: 0,
-        status: "Pending",
-        createdBy: "Mr. Michael Harris"
+        status: "Pending"
     })
 
     useEffect(() => {
@@ -32,13 +30,11 @@ function CreateOrderModel({ close, order }) {
                 address: order.address || "",
                 city: order.city || "",
                 state: order.state || "",
-                postalCode: order.postalCode || "",
                 country: order.country || "United States",
                 product: order.product || "Fiber Internet 300 Mbps",
                 quantity: order.quantity || 1,
                 unitPrice: order.unitPrice || 0,
-                status: order.status || "Pending",
-                createdBy: order.createdBy || "Mr. Michael Harris"
+                status: order.status || "Pending"
             }))
         }
 
@@ -58,13 +54,11 @@ function CreateOrderModel({ close, order }) {
         if (!form.address.trim()) newErrors.address = "Please fill the field"
         if (!form.city.trim()) newErrors.city = "Please fill the field"
         if (!form.state.trim()) newErrors.state = "Please fill the field"
-        if (!form.postalCode.trim()) newErrors.postalCode = "Please fill the field"
         if (!form.country.trim()) newErrors.country = "Please fill the field"
         if (!form.product.trim()) newErrors.product = "Please fill the field"
         if (form.quantity < 1) newErrors.quantity = "Quantity cannot be less than 1"
         if (form.unitPrice <= 0) newErrors.unitPrice = "Please enter a valid unit price"
         if (!form.status.trim()) newErrors.status = "Please fill the field"
-        if (!form.createdBy.trim()) newErrors.createdBy = "Please fill the field"
 
         setErrors(newErrors)
         return Object.keys(newErrors).length === 0
@@ -170,16 +164,6 @@ function CreateOrderModel({ close, order }) {
                     </div>
 
                     <div>
-                        <input
-                            placeholder="Postal Code"
-                            className={`border p-2 rounded w-full ${errors.postalCode ? 'border-red-500' : ''}`}
-                            value={form.postalCode}
-                            onChange={e => setForm({ ...form, postalCode: e.target.value })}
-                        />
-                        {errors.postalCode && <span className="text-red-500 text-sm">{errors.postalCode}</span>}
-                    </div>
-
-                    <div>
                         <select
                             className={`border p-2 rounded w-full ${errors.country ? 'border-red-500' : ''}`}
                             value={form.country}
@@ -253,24 +237,10 @@ function CreateOrderModel({ close, order }) {
                             onChange={e => setForm({ ...form, status: e.target.value })}
                         >
                             <option>Pending</option>
-                            <option>In progress</option>
+                            <option>In Progress</option>
                             <option>Completed</option>
                         </select>
                         {errors.status && <span className="text-red-500 text-sm">{errors.status}</span>}
-                    </div>
-
-                    <div>
-                        <select
-                            className={`border p-2 rounded w-full ${errors.createdBy ? 'border-red-500' : ''}`}
-                            value={form.createdBy}
-                            onChange={e => setForm({ ...form, createdBy: e.target.value })}
-                        >
-                            <option>Mr. Michael Harris</option>
-                            <option>Mr. Ryan Cooper</option>
-                            <option>Ms. Olivia Carter</option>
-                            <option>Mr. Lucas Martin</option>
-                        </select>
-                        {errors.createdBy && <span className="text-red-500 text-sm">{errors.createdBy}</span>}
                     </div>
                 </div>
 

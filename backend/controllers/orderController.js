@@ -1,32 +1,32 @@
 const Order = require("../models/Order")
 
 exports.createOrder = async (req, res) => {
-
     try {
-
         const data = req.body
+        const userId = req.user.userId
 
-        data.totalAmount = data.quantity * data.unitPrice
+        const order = await Order.create({
+            ...data,
+            createdBy: userId
+        })
 
-        const order = await Order.create(data)
-
-        res.json(order)
-
+        const populated = await Order.findById(order._id).populate('createdBy', 'username email role')
+        res.status(201).json(populated)
+    } catch (err) {
+        res.status(500).json({ error: err.message })
     }
-
-    catch (err) {
-
-        res.status(500).json(err)
-
-    }
-
 }
 
 exports.getOrders = async (req, res) => {
-
     try {
         let query = {}
         const { filter, status, startDate, endDate } = req.query
+        const userRole = req.user.role
+        const userId = req.user.userId
+
+        if (userRole !== "admin") {
+            query.createdBy = userId
+        }
 
         if (filter || startDate || endDate) {
             query.createdAt = {}
@@ -38,12 +38,13 @@ exports.getOrders = async (req, res) => {
                         query.createdAt.$gte = new Date(now.getFullYear(), now.getMonth(), now.getDate())
                         break
                     case 'week':
-                        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
-                        query.createdAt.$gte = weekAgo
+                        query.createdAt.$gte = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
                         break
                     case 'month':
-                        const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
-                        query.createdAt.$gte = monthAgo
+                        query.createdAt.$gte = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+                        break
+                    case 'quarter':
+                        query.createdAt.$gte = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000)
                         break
                     case 'all':
                     default:
@@ -71,7 +72,9 @@ exports.getOrders = async (req, res) => {
             query.status = status
         }
 
-        const orders = await Order.find(query).populate('createdBy', 'username').sort({ createdAt: -1 })
+        const orders = await Order.find(query)
+            .populate('createdBy', 'username email role')
+            .sort({ createdAt: -1 })
         res.json(orders)
     } catch (error) {
         res.status(500).json({ error: error.message })
@@ -79,17 +82,50 @@ exports.getOrders = async (req, res) => {
 }
 
 exports.deleteOrder = async (req, res) => {
+    try {
+        const userRole = req.user.role
+        const userId = req.user.userId
+        const query = userRole === "admin"
+            ? { _id: req.params.id }
+            : { _id: req.params.id, createdBy: userId }
 
-    await Order.findByIdAndDelete(req.params.id)
+        const deleted = await Order.findOneAndDelete(query)
+        if (!deleted) {
+            return res.status(404).json({ error: "Order not found or access denied" })
+        }
 
-    res.json("Deleted")
-
+        res.json({ success: true })
+    } catch (error) {
+        res.status(500).json({ error: error.message })
+    }
 }
 
 exports.updateOrder = async (req, res) => {
+    try {
+        const userRole = req.user.role
+        const userId = req.user.userId
+        const query = userRole === "admin"
+            ? { _id: req.params.id }
+            : { _id: req.params.id, createdBy: userId }
 
-    const order = await Order.findByIdAndUpdate(req.params.id, req.body, { new: true })
+        const updated = await Order.findOne(query)
+        if (!updated) {
+            return res.status(404).json({ error: "Order not found or access denied" })
+        }
 
-    res.json(order)
+        const { createdBy, ...safeBody } = req.body
+        Object.assign(updated, safeBody)
+        if (req.body.quantity !== undefined || req.body.unitPrice !== undefined) {
+            const qty = Number(updated.quantity || 0)
+            const price = Number(updated.unitPrice || 0)
+            updated.totalAmount = qty * price
+        }
 
-} 
+        await updated.save()
+
+        const populated = await Order.findById(updated._id).populate('createdBy', 'username email role')
+        res.json(populated)
+    } catch (error) {
+        res.status(500).json({ error: error.message })
+    }
+}

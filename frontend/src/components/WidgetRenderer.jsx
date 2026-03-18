@@ -51,6 +51,9 @@ function WidgetRenderer({ widget, data, onDateFilter }) {
         "Product": "product",
         "Status": "status",
         "Created by": "createdBy",
+        "City": "city",
+        "State": "state",
+        "Country": "country",
         "Customer ID": "_id",
         "Customer name": "customerName",
         "Email id": "email",
@@ -306,6 +309,12 @@ function WidgetRenderer({ widget, data, onDateFilter }) {
             : ["Customer ID", "Customer name", "Email id", "Phone number", "Address", "Order ID", "Order date", "Product", "Quantity", "Unit price", "Total amount", "Status", "Created by"]
 
         let filteredTableData = safeData
+        const createdByOptions = Array.from(new Set(
+            safeData.map(o => (typeof o.createdBy === "string" ? o.createdBy : o.createdBy?.username || "")).filter(Boolean)
+        ))
+        const productOptions = Array.from(new Set(
+            safeData.map(o => o.product).filter(Boolean)
+        ))
 
         if (widget.applyFilter) {
             const search = tableFilters.search.trim().toLowerCase()
@@ -344,7 +353,7 @@ function WidgetRenderer({ widget, data, onDateFilter }) {
                         case "Customer name": value = `${o.firstName || ""} ${o.lastName || ""}`.trim() || "N/A"; break
                         case "Email id": value = o.email || "N/A"; break
                         case "Phone number": value = o.phone || "N/A"; break
-                        case "Address": value = `${o.address || ""}, ${o.city || ""}, ${o.state || ""} ${o.postalCode || ""}`.trim() || "N/A"; break
+                        case "Address": value = `${o.address || ""}, ${o.city || ""}, ${o.state || ""}, ${o.country || ""}`.trim() || "N/A"; break
                         case "Order ID": value = o._id || "N/A"; break
                         case "Order date": value = o.createdAt ? new Date(o.createdAt).toLocaleDateString() : "N/A"; break
                         case "Product": value = o.product || "N/A"; break
@@ -383,7 +392,7 @@ function WidgetRenderer({ widget, data, onDateFilter }) {
                         case "Customer name": value = `${o.firstName || ""} ${o.lastName || ""}`.trim() || "N/A"; break
                         case "Email id": value = o.email || "N/A"; break
                         case "Phone number": value = o.phone || "N/A"; break
-                        case "Address": value = `${o.address || ""}, ${o.city || ""}, ${o.state || ""} ${o.postalCode || ""}`.trim() || "N/A"; break
+                        case "Address": value = `${o.address || ""}, ${o.city || ""}, ${o.state || ""}, ${o.country || ""}`.trim() || "N/A"; break
                         case "Order ID": value = o._id || "N/A"; break
                         case "Order date": value = o.createdAt ? new Date(o.createdAt).toLocaleDateString() : "N/A"; break
                         case "Product": value = o.product || "N/A"; break
@@ -442,11 +451,9 @@ function WidgetRenderer({ widget, data, onDateFilter }) {
                             className="border p-2 rounded text-sm"
                         >
                             <option value="">All Products</option>
-                            <option>Fiber Internet 300 Mbps</option>
-                            <option>5GUnlimited Mobile Plan</option>
-                            <option>Fiber Internet 1 Gbps</option>
-                            <option>Business Internet 500 Mbps</option>
-                            <option>VoIP Corporate Package</option>
+                            {productOptions.map(name => (
+                                <option key={name}>{name}</option>
+                            ))}
                         </select>
                         <select
                             value={tableFilters.status}
@@ -455,7 +462,7 @@ function WidgetRenderer({ widget, data, onDateFilter }) {
                         >
                             <option value="">All Status</option>
                             <option>Pending</option>
-                            <option>In progress</option>
+                            <option>In Progress</option>
                             <option>Completed</option>
                         </select>
                         <select
@@ -464,10 +471,9 @@ function WidgetRenderer({ widget, data, onDateFilter }) {
                             className="border p-2 rounded text-sm"
                         >
                             <option value="">All Owners</option>
-                            <option>Mr. Michael Harris</option>
-                            <option>Mr. Ryan Cooper</option>
-                            <option>Ms. Olivia Carter</option>
-                            <option>Mr. Lucas Martin</option>
+                            {createdByOptions.map(name => (
+                                <option key={name}>{name}</option>
+                            ))}
                         </select>
                     </div>
                 )}
@@ -490,7 +496,7 @@ function WidgetRenderer({ widget, data, onDateFilter }) {
                                             case "Customer name": value = `${o.firstName || ""} ${o.lastName || ""}`.trim() || "N/A"; break
                                             case "Email id": value = o.email || "N/A"; break
                                             case "Phone number": value = o.phone || "N/A"; break
-                                            case "Address": value = `${o.address || ""}, ${o.city || ""}, ${o.state || ""} ${o.postalCode || ""}`.trim() || "N/A"; break
+                                            case "Address": value = `${o.address || ""}, ${o.city || ""}, ${o.state || ""}, ${o.country || ""}`.trim() || "N/A"; break
                                             case "Order ID": value = o._id || "N/A"; break
                                             case "Order date": value = o.createdAt ? new Date(o.createdAt).toLocaleDateString() : "N/A"; break
                                             case "Product": value = o.product || "N/A"; break

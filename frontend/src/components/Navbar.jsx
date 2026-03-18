@@ -29,6 +29,11 @@ function Navbar({ user, onLogout }) {
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                         <Link to="/orders" className="text-white hover:text-amber-200 transition-colors duration-200">Orders</Link>
                     </motion.div>
+                    {user?.role === "admin" && (
+                        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                            <Link to="/admin/users" className="text-white hover:text-amber-200 transition-colors duration-200">Users</Link>
+                        </motion.div>
+                    )}
                 </div>
 
                 <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-4 ml-0 md:ml-8 md:pl-8 border-t md:border-t-0 md:border-l border-white/20 pt-4 md:pt-0">

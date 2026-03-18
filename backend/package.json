@@ -4,7 +4,8 @@
   "description": "Halleyx Dashboard Backend",
   "main": "server.js",
   "scripts": {
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "seed": "node seed/seed.js"
   },
   "author": "",
   "license": "ISC",

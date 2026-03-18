@@ -1,8 +1,8 @@
 const Dashboard = require("../models/Dashboard")
 exports.getDashboards = async (req, res) => {
     try {
-        const userId = req.user?.userId || "69b96fbf8f49aa704d53fb3b" // Test user ObjectId
-        const userRole = req.user?.role || "admin"
+        const userId = req.user.userId
+        const userRole = req.user.role
 
         let query = {}
 
@@ -18,7 +18,7 @@ exports.getDashboards = async (req, res) => {
         // Admins see all dashboards
 
         const dashboards = await Dashboard.find(query)
-          .populate('owner', 'username email')
+          .populate('owner', 'username email role')
           .sort({ updatedAt: -1 })
 
         res.json({
@@ -37,8 +37,8 @@ exports.getDashboards = async (req, res) => {
 exports.getDashboard = async (req, res) => {
     try {
         const dashboardId = req.params.id
-        const userId = req.user?.userId || "69b96fbf8f49aa704d53fb3b"
-        const userRole = req.user?.role || "admin"
+        const userId = req.user.userId
+        const userRole = req.user.role
 
         let query = { _id: dashboardId }
 
@@ -50,7 +50,7 @@ exports.getDashboard = async (req, res) => {
             ]
         }
 
-        const dashboard = await Dashboard.findOne(query).populate('owner', 'username email')
+        const dashboard = await Dashboard.findOne(query).populate('owner', 'username email role')
 
         if (!dashboard) {
             return res.status(404).json({
@@ -75,7 +75,7 @@ exports.getDashboard = async (req, res) => {
 exports.createDashboard = async (req, res) => {
     try {
         const { name, description, widgets, isPublic } = req.body
-        const userId = req.user?.userId || "69b96fbf8f49aa704d53fb3b"
+        const userId = req.user.userId
 
         const dashboard = new Dashboard({
             name,
@@ -88,7 +88,7 @@ exports.createDashboard = async (req, res) => {
         await dashboard.save()
 
         const populatedDashboard = await Dashboard.findById(dashboard._id)
-            .populate('owner', 'username email')
+            .populate('owner', 'username email role')
 
         res.status(201).json({
             success: true,
@@ -107,13 +107,15 @@ exports.createDashboard = async (req, res) => {
 exports.updateDashboard = async (req, res) => {
     try {
         const dashboardId = req.params.id
-        const userId = req.user?.userId || "69b96fbf8f49aa704d53fb3b"
+        const userId = req.user.userId
+        const userRole = req.user.role
         const { name, description, widgets, isPublic } = req.body
 
-        const dashboard = await Dashboard.findOne({
-            _id: dashboardId,
-            owner: userId
-        })
+        const query = userRole === "admin"
+            ? { _id: dashboardId }
+            : { _id: dashboardId, owner: userId }
+
+        const dashboard = await Dashboard.findOne(query)
 
         if (!dashboard) {
             return res.status(404).json({
@@ -130,7 +132,7 @@ exports.updateDashboard = async (req, res) => {
         await dashboard.save()
 
         const updatedDashboard = await Dashboard.findById(dashboardId)
-            .populate('owner', 'username email')
+            .populate('owner', 'username email role')
 
         res.json({
             success: true,
@@ -149,12 +151,14 @@ exports.updateDashboard = async (req, res) => {
 exports.deleteDashboard = async (req, res) => {
     try {
         const dashboardId = req.params.id
-        const userId = req.user?.userId || "69b96fbf8f49aa704d53fb3b"
+        const userId = req.user.userId
+        const userRole = req.user.role
 
-        const dashboard = await Dashboard.findOneAndDelete({
-            _id: dashboardId,
-            owner: userId
-        })
+        const query = userRole === "admin"
+            ? { _id: dashboardId }
+            : { _id: dashboardId, owner: userId }
+
+        const dashboard = await Dashboard.findOneAndDelete(query)
 
         if (!dashboard) {
             return res.status(404).json({
@@ -179,13 +183,15 @@ exports.deleteDashboard = async (req, res) => {
 exports.shareDashboard = async (req, res) => {
     try {
         const dashboardId = req.params.id
-        const userId = req.user?.userId || "69b96fbf8f49aa704d53fb3b"
+        const userId = req.user.userId
+        const userRole = req.user.role
         const { userEmail, permission } = req.body
 
-        const dashboard = await Dashboard.findOne({
-            _id: dashboardId,
-            owner: userId
-        })
+        const query = userRole === "admin"
+            ? { _id: dashboardId }
+            : { _id: dashboardId, owner: userId }
+
+        const dashboard = await Dashboard.findOne(query)
 
         if (!dashboard) {
             return res.status(404).json({
@@ -224,7 +230,7 @@ exports.shareDashboard = async (req, res) => {
 
 exports.loadDashboard = async (req, res) => {
     try {
-        const userId = req.user?.userId || "69b96fbf8f49aa704d53fb3b" // Test user ObjectId
+        const userId = req.user.userId
 
         const dashboard = await Dashboard.findOne({ owner: userId, name: 'Default Dashboard' })
 
@@ -238,7 +244,7 @@ exports.loadDashboard = async (req, res) => {
 
 exports.saveDashboard = async (req, res) => {
     try {
-        const userId = req.user?.userId || "69b96fbf8f49aa704d53fb3b" // Test user ObjectId
+        const userId = req.user.userId
         const { widgets } = req.body
 
         let dashboard = await Dashboard.findOne({ owner: userId, name: 'Default Dashboard' })

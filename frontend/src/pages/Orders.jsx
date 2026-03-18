@@ -112,6 +112,7 @@ function Orders() {
                                     <th className="p-2 text-left">Product</th>
                                     <th className="p-2 text-left">Total</th>
                                     <th className="p-2 text-left">Status</th>
+                                    <th className="p-2 text-left">Created By</th>
                                     <th className="p-2 text-left">Actions</th>
 
                                 </tr>
@@ -146,7 +147,7 @@ function Orders() {
 
                                             <span className={`px-2 py-1 rounded text-white text-sm
 ${o.status === "Pending" && "bg-yellow-500"}
-${o.status === "In progress" && "bg-blue-500"}
+${o.status === "In Progress" && "bg-blue-500"}
 ${o.status === "Completed" && "bg-green-600"}
 `}>
 
@@ -156,13 +157,17 @@ ${o.status === "Completed" && "bg-green-600"}
 
                                         </td>
 
+                                        <td className="p-2 whitespace-normal break-words">
+                                            {typeof o.createdBy === "string" ? o.createdBy : o.createdBy?.username || "N/A"}
+                                        </td>
+
                                         <td className="p-2">
                                             <button
                                                 onClick={(e) => openContextMenu(e, o)}
                                                 className="px-2 py-1 rounded border hover:bg-gray-100"
                                                 aria-label="Open actions"
                                             >
-                                                •••
+                                                ...
                                             </button>
                                         </td>
 

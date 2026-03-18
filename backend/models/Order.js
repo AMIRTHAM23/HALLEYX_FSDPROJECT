@@ -1,112 +1,89 @@
 const mongoose = require("mongoose")
 
 const orderSchema = new mongoose.Schema({
-
     firstName: {
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
-
     lastName: {
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
-
     email: {
         type: String,
-        required: true
+        required: true,
+        trim: true,
+        lowercase: true
     },
-
     phone: {
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
-
     address: {
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
-
     city: {
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
-
     state: {
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
-
-    postalCode: {
-        type: String,
-        required: true
-    },
-
     country: {
         type: String,
-        enum: [
-            "United States",
-            "Canada",
-            "Australia",
-            "Singapore",
-            "Hong Kong"
-        ],
-        required: true
+        required: true,
+        trim: true
     },
-
     product: {
         type: String,
-        enum: [
-            "Fiber Internet 300 Mbps",
-            "5GUnlimited Mobile Plan",
-            "Fiber Internet 1 Gbps",
-            "Business Internet 500 Mbps",
-            "VoIP Corporate Package"
-        ],
-        required: true
+        required: true,
+        trim: true
     },
-
     quantity: {
         type: Number,
+        required: true,
+        min: 1,
         default: 1
     },
-
     unitPrice: {
         type: Number,
-        required: true
+        required: true,
+        min: 0
     },
-
     totalAmount: {
-        type: Number
+        type: Number,
+        default: 0
     },
-
     status: {
         type: String,
         enum: [
             "Pending",
-            "In progress",
+            "In Progress",
             "Completed"
         ],
         default: "Pending"
     },
-
     createdBy: {
-        type: String,
-        enum: [
-            "Mr. Michael Harris",
-            "Mr. Ryan Cooper",
-            "Ms. Olivia Carter",
-            "Mr. Lucas Martin"
-        ],
-        required: true    },
-
-    owner: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        default: null
-    },
-
+        required: true
+    }
 }, { timestamps: true })
+
+orderSchema.pre("save", function(next) {
+    const qty = Number(this.quantity || 0)
+    const price = Number(this.unitPrice || 0)
+    this.totalAmount = qty * price
+    next()
+})
 
 module.exports = mongoose.model("Order", orderSchema)
 

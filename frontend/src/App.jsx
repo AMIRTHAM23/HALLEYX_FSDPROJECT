@@ -7,6 +7,8 @@ import Login from "./components/Login";
 import Dashboard from "./pages/Dashboard";
 import ConfigureDashboard from "./pages/ConfigureDashboard";
 import Orders from "./pages/Orders";
+import AdminUsers from "./pages/AdminUsers";
+import API from "./services/api";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -24,9 +26,20 @@ function App() {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
       }
+    } else if (token) {
+      API.get("/auth/profile")
+        .then((res) => {
+          if (res.data?.user) {
+            setUser(res.data.user);
+            localStorage.setItem("user", JSON.stringify(res.data.user));
+          }
+        })
+        .catch(() => {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+        })
     } else {
-      // Temporarily bypass login for testing
-      setUser({ username: "testuser", role: "admin" });
+      setUser(null);
     }
     setLoading(false);
   }, []);
@@ -62,6 +75,7 @@ function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/configure" element={<ConfigureDashboard />} />
             <Route path="/orders" element={<Orders />} />
+            {user?.role === "admin" && <Route path="/admin/users" element={<AdminUsers />} />}
           </Routes>
         </div>
       </div>

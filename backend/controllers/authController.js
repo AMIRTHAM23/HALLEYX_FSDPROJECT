@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken')
 const authController = {
     register: async (req, res) => {
         try {
-            const { username, email, password, role } = req.body
+            const { username, email, password } = req.body
             const existingUser = await User.findOne({
                 $or: [{ email: email.toLowerCase() }, { username }]
             })
@@ -24,7 +24,7 @@ const authController = {
                 username,
                 email: email.toLowerCase(),
                 password: hashedPassword,
-                role: role || 'user'
+                role: 'user'
             })
 
             await user.save()

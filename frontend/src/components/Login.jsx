@@ -6,8 +6,7 @@ const Login = ({ onLogin }) => {
     const [formData, setFormData] = useState({
         username: '',
         email: '',
-        password: '',
-        role: 'user'
+        password: ''
     })
 
     const [isRegistering, setIsRegistering] = useState(false)
@@ -27,8 +26,7 @@ const Login = ({ onLogin }) => {
         setFormData({
             username: '',
             email: '',
-            password: '',
-            role: 'user'
+            password: ''
         })
     }
 
@@ -178,30 +176,6 @@ const Login = ({ onLogin }) => {
                                     />
                                 </div>
 
-                                <AnimatePresence>
-                                    {isRegistering && (
-                                        <motion.div
-                                            initial={{ opacity: 0, height: 0 }}
-                                            animate={{ opacity: 1, height: 'auto' }}
-                                            exit={{ opacity: 0, height: 0 }}
-                                            transition={{ duration: 0.3 }}
-                                        >
-                                            <label className="block text-sm font-medium text-stone-700 mb-2">
-                                                Account Type
-                                            </label>
-                                            <motion.select
-                                                whileFocus={{ scale: 1.02 }}
-                                                name="role"
-                                                value={formData.role}
-                                                onChange={handleChange}
-                                                className="appearance-none relative block w-full px-4 py-3 border border-stone-300 rounded-xl text-stone-900 focus:outline-none focus:ring-2 focus:ring-amber-600 focus:border-transparent transition-all duration-200"
-                                            >
-                                                <option value="user">Regular User</option>
-                                                <option value="admin">Administrator</option>
-                                            </motion.select>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
                             </div>
 
                             <AnimatePresence>

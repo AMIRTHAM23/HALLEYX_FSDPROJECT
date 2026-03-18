@@ -1,5 +1,5 @@
 const router = require("express").Router()
-
+const authController = require("../controllers/authController")
 const {
     createOrder,
     getOrders,
@@ -7,9 +7,9 @@ const {
     updateOrder
 } = require("../controllers/orderController")
 
-router.post("/", createOrder)
-router.get("/", getOrders)
-router.delete("/:id", deleteOrder)
-router.put("/:id", updateOrder)
+router.post("/", authController.authenticateToken, createOrder)
+router.get("/", authController.authenticateToken, getOrders)
+router.delete("/:id", authController.authenticateToken, deleteOrder)
+router.put("/:id", authController.authenticateToken, updateOrder)
 
 module.exports = router

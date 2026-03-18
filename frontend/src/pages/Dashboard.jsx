@@ -152,11 +152,19 @@ function Dashboard() {
                     Dashboard
                 </h1>
 
-                <DashboardSelector
-                    currentDashboard={currentDashboard}
-                    onDashboardChange={handleDashboardChange}
-                    onCreateDashboard={handleCreateDashboard}
-                />
+                <div className="flex flex-col md:flex-row gap-3 md:items-center">
+                    <DashboardSelector
+                        currentDashboard={currentDashboard}
+                        onDashboardChange={handleDashboardChange}
+                        onCreateDashboard={handleCreateDashboard}
+                    />
+                    <Link
+                        to="/configure"
+                        className="bg-amber-600 text-white px-4 py-2 rounded hover:bg-amber-700 text-sm text-center"
+                    >
+                        Configure Dashboard
+                    </Link>
+                </div>
 
             </div>
 
