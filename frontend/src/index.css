@@ -1,0 +1,133 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@500;700&family=Nunito+Sans:wght@400;600;700&display=swap');
+
+body{
+background:#f7f4ef;
+font-family:'Nunito Sans', system-ui, -apple-system, Segoe UI, sans-serif;
+overflow-x:hidden;
+color:#3f2f24;
+}
+
+h1, h2, h3, h4, h5, h6{
+  font-family:'Fraunces', 'Nunito Sans', system-ui, sans-serif;
+  letter-spacing: 0.2px;
+}
+
+:root{
+  --ink:#3f2f24;
+  --surface:#f7f4ef;
+  --surface-2:#f1ebe3;
+  --accent:#b7791f;
+  --accent-2:#7c5e47;
+  --bubble:#d6c5b3;
+}
+
+.app-shell{
+  position: relative;
+  background:
+    radial-gradient(1200px 600px at 10% -10%, #fff7ed 0%, transparent 60%),
+    radial-gradient(900px 500px at 90% 0%, #f1e7da 0%, transparent 55%),
+    linear-gradient(180deg, #f7f4ef 0%, #efe7dc 100%);
+  color: var(--ink);
+  overflow: hidden;
+}
+
+.app-shell::before,
+.app-shell::after{
+  content:"";
+  position:absolute;
+  inset:-20% -10% auto -10%;
+  height:60%;
+  background:
+    radial-gradient(120px 120px at 10% 40%, rgba(214,197,179,0.45) 0%, rgba(214,197,179,0) 70%),
+    radial-gradient(160px 160px at 30% 20%, rgba(214,197,179,0.35) 0%, rgba(214,197,179,0) 70%),
+    radial-gradient(140px 140px at 70% 35%, rgba(214,197,179,0.4) 0%, rgba(214,197,179,0) 70%),
+    radial-gradient(180px 180px at 85% 15%, rgba(214,197,179,0.3) 0%, rgba(214,197,179,0) 70%);
+  filter: blur(2px);
+  animation: floatBubbles 18s ease-in-out infinite;
+  pointer-events:none;
+  z-index:0;
+}
+
+.app-shell::after{
+  inset:auto -10% -30% -10%;
+  height:70%;
+  animation-duration: 22s;
+  animation-delay: -6s;
+}
+
+.app-content{
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes floatBubbles{
+  0%{ transform: translateY(0px) translateX(0px) scale(1); opacity:0.9;}
+  50%{ transform: translateY(12px) translateX(6px) scale(1.02); opacity:1;}
+  100%{ transform: translateY(0px) translateX(0px) scale(1); opacity:0.9;}
+}
+
+.auth-shell{
+  position: relative;
+  min-height: 100vh;
+  background:
+    radial-gradient(900px 500px at 15% -10%, #fff6e8 0%, transparent 60%),
+    radial-gradient(700px 420px at 90% 0%, #efe3d4 0%, transparent 55%),
+    linear-gradient(180deg, #f7f4ef 0%, #efe7dc 100%);
+  overflow: hidden;
+}
+
+.bubble{
+  position: absolute;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.7), rgba(214,197,179,0.5) 60%, rgba(214,197,179,0.15) 100%);
+  filter: blur(1px);
+  opacity: 0.8;
+  animation: bubbleFloat 20s ease-in-out infinite;
+}
+
+.bubble.sm{ width: 120px; height: 120px; }
+.bubble.md{ width: 180px; height: 180px; }
+.bubble.lg{ width: 260px; height: 260px; }
+
+.bubble.b1{ top:-60px; right:-60px; animation-duration: 22s; }
+.bubble.b2{ bottom:-80px; left:-40px; animation-duration: 26s; }
+.bubble.b3{ top:20%; left:-70px; animation-duration: 24s; }
+.bubble.b4{ bottom:10%; right:-90px; animation-duration: 28s; }
+
+@keyframes bubbleFloat{
+  0%{ transform: translate(0,0) scale(1); }
+  50%{ transform: translate(18px, -10px) scale(1.03); }
+  100%{ transform: translate(0,0) scale(1); }
+}
+
+.widget{
+transition:0.3s;
+}
+
+.widget:hover{
+transform:scale(1.03);
+}
+
+.react-grid-placeholder {
+  background: #93c5fd;
+  border: 2px dashed #3b82f6;
+  border-radius: 12px;
+  opacity: 0.35;
+}
+
+.layout {
+  overflow: hidden;
+}
+
+/* Hide scrollbars for a cleaner dashboard canvas and widgets */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
