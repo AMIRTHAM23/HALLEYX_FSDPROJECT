@@ -6,7 +6,7 @@ function WidgetSettings({ widget, onUpdate, onClose }) {
     const [title, setTitle] = useState("");
     const [width, setWidth] = useState(3);
     const [height, setHeight] = useState(3);
-    const [color, setColor] = useState("#22c55e");
+    const [color, setColor] = useState("#8B5E34");
     const [columns, setColumns] = useState([]);
     const [visibleColumns, setVisibleColumns] = useState([]);
 
@@ -40,7 +40,7 @@ function WidgetSettings({ widget, onUpdate, onClose }) {
              
             setHeight(widget.h || 3);
              
-            setColor(widget.color || "#22c55e");
+            setColor(widget.color || "#8B5E34");
 
             if (widget.type === "kpi") {
                 setMetric(widget.metric || "Total amount");

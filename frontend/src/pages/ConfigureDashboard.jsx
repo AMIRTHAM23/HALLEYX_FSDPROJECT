@@ -100,7 +100,7 @@ function ConfigureDashboard() {
             minH: 1,
             type,
             title: type === "date-filter" ? "Date Filter" : type.toUpperCase(),
-            color: "#22c55e",
+            color: "#8B5E34",
             columns: type === "table" ? ["Customer ID", "Customer name", "Email id", "Phone number", "Address", "Order ID", "Order date", "Product", "Quantity", "Unit price", "Total amount", "Status", "Created by"] : [],
             visibleColumns: type === "table" ? ["Customer ID", "Customer name", "Email id", "Phone number", "Address", "Order ID", "Order date", "Product", "Quantity", "Unit price", "Total amount", "Status", "Created by"] : [],
             ...(type === "kpi" && {
@@ -196,13 +196,15 @@ function ConfigureDashboard() {
                         )}
 
                         <div
-                            className="relative z-10 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4"
+                            className="relative z-10 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 items-start content-start"
                             style={{ gap: `${gridGap}px` }}
                         >
                             {widgets.map((w, index) => (
                                 <div
                                     key={w.i}
-                                    className="bg-white rounded-xl shadow-lg border border-stone-200 relative group hover:shadow-2xl transition-shadow overflow-hidden min-w-0 flex flex-col h-64"
+                                    className={`bg-white rounded-xl shadow-lg border border-stone-200 relative group hover:shadow-2xl transition-shadow overflow-hidden min-w-0 flex flex-col ${
+                                        w.type === "table" ? "h-[420px] md:col-span-2 xl:col-span-4" : "h-64"
+                                    }`}
                                 >
                                     <motion.div
                                         initial={{ opacity: 0, y: 40, scale: 0.9 }}
@@ -220,12 +222,12 @@ function ConfigureDashboard() {
                                             onClick={() => {
                                                 setActiveWidget(w);
                                             }}
-                                            className="absolute top-3 right-3 bg-amber-600 hover:bg-amber-700 text-white px-3 py-1 text-xs rounded shadow-md transition-colors z-30 opacity-0 group-hover:opacity-100 focus:opacity-100"
+                                            className="absolute top-3 right-3 bg-[#8B5E34] hover:bg-[#6F4726] text-white px-3 py-1 text-xs rounded shadow-md transition-colors z-30 opacity-0 group-hover:opacity-100 focus:opacity-100"
                                         >
                                             Settings
                                         </button>
 
-                                        <div className="p-3 h-full w-full flex-1 min-h-0">
+                                        <div className="p-3 h-full w-full flex-1 min-h-0 overflow-hidden">
                                             <WidgetRenderer
                                                 widget={w}
                                                 data={filteredData}
@@ -264,7 +266,7 @@ function ConfigureDashboard() {
                                             if (widgetType) addWidget(widgetType)
                                         }}
                                         className={`border-2 border-dashed rounded-xl flex items-center justify-center h-64 text-gray-400 transition-colors cursor-pointer ${
-                                            dragOverIndex === slotIndex ? "border-amber-400 bg-amber-50 text-amber-600" : "border-stone-300 bg-white"
+                                            dragOverIndex === slotIndex ? "border-[#8B5E34] bg-[#F4EDE4] text-[#8B5E34]" : "border-stone-300 bg-white"
                                         }`}
                                     >
                                         {activeAddSlot === slotIndex ? (
@@ -277,7 +279,7 @@ function ConfigureDashboard() {
                                                             addWidget(item.type)
                                                             setActiveAddSlot(null)
                                                         }}
-                                                        className="text-xs px-2 py-1 rounded border border-stone-200 hover:border-amber-400 hover:bg-amber-50 text-stone-700"
+                                                        className="text-xs px-2 py-1 rounded border border-stone-200 hover:border-[#8B5E34] hover:bg-[#F4EDE4] text-stone-700"
                                                     >
                                                         {item.label}
                                                     </button>
@@ -302,7 +304,7 @@ function ConfigureDashboard() {
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={saveDashboard}
-                            className="bg-gradient-to-r from-amber-600 to-stone-600 hover:from-amber-700 hover:to-stone-700 text-white px-6 py-3 rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-200"
+                            className="bg-gradient-to-r from-[#8B5E34] to-[#B08968] hover:from-[#6F4726] hover:to-[#8B5E34] text-white px-6 py-3 rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-200"
                         >
                             Save Configuration
                         </motion.button>

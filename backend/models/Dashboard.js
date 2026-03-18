@@ -15,6 +15,15 @@ const dashboardSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
+    createdByName: {
+        type: String,
+        trim: true
+    },
+    createdByRole: {
+        type: String,
+        enum: ['admin', 'user'],
+        default: 'user'
+    },
     widgets: {
         type: Array,
         default: []

@@ -7,6 +7,8 @@ const DashboardSelector = ({ currentDashboard, onDashboardChange, onCreateDashbo
     const [showCreateForm, setShowCreateForm] = useState(false)
     const [newDashboardName, setNewDashboardName] = useState('')
     const [newDashboardDescription, setNewDashboardDescription] = useState('')
+    const [showRenameForm, setShowRenameForm] = useState(false)
+    const [renameValue, setRenameValue] = useState('')
 
     useEffect(() => {
         loadDashboards()
@@ -62,6 +64,24 @@ const DashboardSelector = ({ currentDashboard, onDashboardChange, onCreateDashbo
         }
     }
 
+    const handleRenameDashboard = async (e) => {
+        e.preventDefault()
+        if (!currentDashboard?._id) return
+        if (!renameValue.trim()) return
+        try {
+            const response = await API.put(`/dashboard/${currentDashboard._id}`, {
+                name: renameValue.trim()
+            })
+            if (response.data.success) {
+                await loadDashboards(currentDashboard._id)
+                setShowRenameForm(false)
+                setRenameValue('')
+            }
+        } catch (error) {
+            console.error('Error renaming dashboard:', error)
+        }
+    }
+
     const handleDeleteDashboard = async () => {
         if (!currentDashboard?._id) return
         const confirmDelete = window.confirm("Delete this dashboard?")
@@ -84,7 +104,8 @@ const DashboardSelector = ({ currentDashboard, onDashboardChange, onCreateDashbo
 
     const formatLabel = (dashboard) => {
         const roleLabel = dashboard.owner?.role === "admin" ? "Admin" : "User"
-        return `${roleLabel}: ${dashboard.name}`
+        const ownerName = dashboard.owner?.username || dashboard.createdByName || "Unknown"
+        return `${roleLabel} (${ownerName}): ${dashboard.name}`
     }
 
     return (
@@ -97,7 +118,7 @@ const DashboardSelector = ({ currentDashboard, onDashboardChange, onCreateDashbo
                         const selected = dashboards.find(d => d._id === e.target.value)
                         onDashboardChange(selected)
                     }}
-                    className="border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    className="border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#8B5E34]"
                 >
                     {adminDashboards.length > 0 && (
                         <optgroup label="Admin Dashboards">
@@ -123,9 +144,19 @@ const DashboardSelector = ({ currentDashboard, onDashboardChange, onCreateDashbo
             <div className="flex items-center space-x-2">
                 <button
                     onClick={() => setShowCreateForm(true)}
-                    className="bg-amber-600 text-white text-sm px-3 py-1 rounded hover:bg-amber-700"
+                    className="bg-[#8B5E34] text-white text-sm px-3 py-1 rounded hover:bg-[#6F4726]"
                 >
                     + New Dashboard
+                </button>
+                <button
+                    onClick={() => {
+                        setRenameValue(currentDashboard?.name || "")
+                        setShowRenameForm(true)
+                    }}
+                    className="bg-[#B08968] text-white text-sm px-3 py-1 rounded hover:bg-[#8B5E34]"
+                    disabled={!currentDashboard?._id}
+                >
+                    Rename
                 </button>
                 <button
                     onClick={handleDeleteDashboard}
@@ -149,7 +180,7 @@ const DashboardSelector = ({ currentDashboard, onDashboardChange, onCreateDashbo
                                     type="text"
                                     value={newDashboardName}
                                     onChange={(e) => setNewDashboardName(e.target.value)}
-                                    className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                                    className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#8B5E34]"
                                     placeholder="Dashboard name"
                                     required
                                 />
@@ -161,7 +192,7 @@ const DashboardSelector = ({ currentDashboard, onDashboardChange, onCreateDashbo
                                 <textarea
                                     value={newDashboardDescription}
                                     onChange={(e) => setNewDashboardDescription(e.target.value)}
-                                    className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                                    className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#8B5E34]"
                                     placeholder="Dashboard description (optional)"
                                     rows="3"
                                 />
@@ -180,9 +211,50 @@ const DashboardSelector = ({ currentDashboard, onDashboardChange, onCreateDashbo
                                 </button>
                                 <button
                                     type="submit"
-                                    className="bg-amber-600 text-white px-4 py-2 rounded hover:bg-amber-700"
+                                    className="bg-[#8B5E34] text-white px-4 py-2 rounded hover:bg-[#6F4726]"
                                 >
                                     Create
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {showRenameForm && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+                        <h3 className="text-lg font-semibold mb-4">Rename Dashboard</h3>
+                        <form onSubmit={handleRenameDashboard}>
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Name *
+                                </label>
+                                <input
+                                    type="text"
+                                    value={renameValue}
+                                    onChange={(e) => setRenameValue(e.target.value)}
+                                    className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#8B5E34]"
+                                    placeholder="Dashboard name"
+                                    required
+                                />
+                            </div>
+                            <div className="flex justify-end space-x-2">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setShowRenameForm(false)
+                                        setRenameValue('')
+                                    }}
+                                    className="px-4 py-2 text-gray-600 hover:text-gray-800"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="bg-[#8B5E34] text-white px-4 py-2 rounded hover:bg-[#6F4726]"
+                                >
+                                    Update
                                 </button>
                             </div>
                         </form>

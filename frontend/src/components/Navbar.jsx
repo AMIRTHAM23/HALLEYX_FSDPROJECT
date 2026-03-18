@@ -7,7 +7,7 @@ function Navbar({ user, onLogout }) {
             initial={{ y: -100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="bg-gradient-to-r from-amber-700 to-stone-700 shadow-lg p-4 flex flex-col md:flex-row justify-between items-center"
+            className="bg-gradient-to-r from-[#8B5E34] to-[#B08968] shadow-lg p-4 flex flex-col md:flex-row justify-between items-center"
         >
             <motion.h1
                 initial={{ scale: 0.8 }}
@@ -21,17 +21,17 @@ function Navbar({ user, onLogout }) {
             <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-5">
                 <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-5">
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                        <Link to="/" className="text-white hover:text-amber-200 transition-colors duration-200">Dashboard</Link>
+                        <Link to="/" className="text-white hover:text-[#E6D5C3] transition-colors duration-200">Dashboard</Link>
                     </motion.div>
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                        <Link to="/configure" className="text-white hover:text-amber-200 transition-colors duration-200">Configure</Link>
+                        <Link to="/configure" className="text-white hover:text-[#E6D5C3] transition-colors duration-200">Configure</Link>
                     </motion.div>
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                        <Link to="/orders" className="text-white hover:text-amber-200 transition-colors duration-200">Orders</Link>
+                        <Link to="/orders" className="text-white hover:text-[#E6D5C3] transition-colors duration-200">Orders</Link>
                     </motion.div>
                     {user?.role === "admin" && (
                         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                            <Link to="/admin/users" className="text-white hover:text-amber-200 transition-colors duration-200">Users</Link>
+                            <Link to="/admin/users" className="text-white hover:text-[#E6D5C3] transition-colors duration-200">Users</Link>
                         </motion.div>
                     )}
                 </div>

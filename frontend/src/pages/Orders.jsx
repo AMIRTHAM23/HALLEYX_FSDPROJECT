@@ -70,7 +70,7 @@ function Orders() {
 
                 <button
                     onClick={() => setOpen(true)}
-                    className="bg-amber-600 text-white px-4 py-2 rounded hover:bg-amber-700">
+                    className="bg-[#8B5E34] text-white px-4 py-2 rounded hover:bg-[#6F4726]">
 
                     Create Order
 
@@ -91,7 +91,7 @@ function Orders() {
                     <div className="text-red-500 mb-4">{error}</div>
                     <button
                         onClick={loadOrders}
-                        className="bg-amber-600 text-white px-4 py-2 rounded hover:bg-amber-700"
+                        className="bg-[#8B5E34] text-white px-4 py-2 rounded hover:bg-[#6F4726]"
                     >
                         Retry
                     </button>

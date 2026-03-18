@@ -233,10 +233,10 @@ function WidgetRenderer({ widget, data, onDateFilter }) {
                 data: Object.values(groupedData),
                 backgroundColor: [
                     widget.color,
-                    "#FF6384",
-                    "#36A2EB",
-                    "#FFCE56",
-                    "#4BC0C0"
+                    "#B08968",
+                    "#DDB892",
+                    "#7F5539",
+                    "#E6CCB2"
                 ]
             }]
         }

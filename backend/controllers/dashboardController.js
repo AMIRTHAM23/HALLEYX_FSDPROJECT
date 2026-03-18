@@ -1,4 +1,5 @@
 const Dashboard = require("../models/Dashboard")
+const User = require("../models/User")
 exports.getDashboards = async (req, res) => {
     try {
         const userId = req.user.userId
@@ -77,12 +78,16 @@ exports.createDashboard = async (req, res) => {
         const { name, description, widgets, isPublic } = req.body
         const userId = req.user.userId
 
+        const user = await User.findById(userId).select("username role")
+
         const dashboard = new Dashboard({
             name,
             description,
             widgets: widgets || [],
             isPublic: isPublic || false,
-            owner: userId
+            owner: userId,
+            createdByName: user?.username || "Unknown",
+            createdByRole: user?.role || "user"
         })
 
         await dashboard.save()
@@ -250,10 +255,13 @@ exports.saveDashboard = async (req, res) => {
         let dashboard = await Dashboard.findOne({ owner: userId, name: 'Default Dashboard' })
 
         if (!dashboard) {
+            const user = await User.findById(userId).select("username role")
             dashboard = new Dashboard({
                 name: 'Default Dashboard',
                 owner: userId,
-                widgets: widgets
+                widgets: widgets,
+                createdByName: user?.username || "Unknown",
+                createdByRole: user?.role || "user"
             })
         } else {
             dashboard.widgets = widgets

@@ -258,7 +258,7 @@ function CreateOrderModel({ close, order }) {
 
                     <button
                         onClick={submit}
-                        className="bg-amber-600 text-white px-4 py-2 rounded hover:bg-amber-700"
+                        className="bg-[#8B5E34] text-white px-4 py-2 rounded hover:bg-[#6F4726]"
                     >
                         {order ? "Update Order" : "Save Order"}
                     </button>

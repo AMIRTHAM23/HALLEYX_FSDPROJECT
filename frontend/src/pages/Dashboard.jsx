@@ -154,7 +154,7 @@ function Dashboard() {
                     />
                     <Link
                         to="/configure"
-                        className="bg-amber-600 text-white px-4 py-2 rounded hover:bg-amber-700 text-sm text-center"
+                        className="bg-[#8B5E34] text-white px-4 py-2 rounded hover:bg-[#6F4726] text-sm text-center"
                     >
                         Configure Dashboard
                     </Link>
@@ -203,7 +203,7 @@ function Dashboard() {
                     </div>
                     <Link
                         to="/configure"
-                        className="bg-amber-600 text-white px-6 py-3 rounded-lg hover:bg-amber-700 transition-colors inline-block"
+                        className="bg-[#8B5E34] text-white px-6 py-3 rounded-lg hover:bg-[#6F4726] transition-colors inline-block"
                     >
                         Configure Dashboard
                     </Link>
@@ -213,13 +213,15 @@ function Dashboard() {
             {/* Widgets Grid */}
             {!loading && !error && widgets.length > 0 && (
                 <div
-                    className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4"
+                    className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 items-start content-start"
                     style={{ gap: `${gridGap}px` }}
                 >
                     {widgets.map((w, index) => (
                         <div
                             key={w.i}
-                            className="bg-white shadow rounded-lg border p-3 min-w-0 flex flex-col h-64"
+                            className={`bg-white shadow rounded-lg border p-3 min-w-0 flex flex-col ${
+                                w.type === "table" ? "h-[420px] md:col-span-2 xl:col-span-4" : "h-64"
+                            }`}
                         >
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}

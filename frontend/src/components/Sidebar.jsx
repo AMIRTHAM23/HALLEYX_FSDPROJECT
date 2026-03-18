@@ -98,7 +98,7 @@ function Sidebar({ addWidget }) {
                                 transition={{ delay: 0.05 * itemIndex, duration: 0.4 }}
                                 whileHover={{ scale: 1.02, boxShadow: "0 10px 25px rgba(0,0,0,0.1)" }}
                                 whileTap={{ scale: 0.98 }}
-                                className="p-3 border-2 border-stone-200 mb-3 cursor-move bg-white hover:bg-gradient-to-r hover:from-amber-50 hover:to-stone-50 hover:border-amber-300 rounded-lg transition-all duration-200 shadow-sm"
+                                className="p-3 border-2 border-stone-200 mb-3 cursor-move bg-white hover:bg-gradient-to-r hover:from-[#F4EDE4] hover:to-stone-50 hover:border-[#B08968] rounded-lg transition-all duration-200 shadow-sm"
                             >
                                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
                                     <div className="mb-2 sm:mb-0">
@@ -108,7 +108,7 @@ function Sidebar({ addWidget }) {
                                     <motion.button
                                         whileHover={{ scale: 1.05 }}
                                         whileTap={{ scale: 0.95 }}
-                                        className="bg-gradient-to-r from-amber-600 to-stone-600 hover:from-amber-700 hover:to-stone-700 text-white text-xs px-3 py-2 rounded-lg shadow-md transition-all duration-200"
+                                        className="bg-gradient-to-r from-[#8B5E34] to-[#B08968] hover:from-[#6F4726] hover:to-[#8B5E34] text-white text-xs px-3 py-2 rounded-lg shadow-md transition-all duration-200"
                                         onClick={() => addWidget(w.type)}
                                     >
                                         Add
