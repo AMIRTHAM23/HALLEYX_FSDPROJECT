@@ -158,9 +158,9 @@ function WidgetSettings({ widget, onUpdate, onClose }) {
                         value={width}
                         min={1}
                         max={12}
-                        // onChange={e => setWidth(e.target.value)}
                         onChange={e => setWidth(Number(e.target.value))}
-                        className="border p-2 w-full rounded"
+                        className="border p-2 w-full rounded bg-gray-100 text-gray-500 cursor-not-allowed"
+                        disabled
                     />
                 </div>
                 <div>
@@ -169,9 +169,9 @@ function WidgetSettings({ widget, onUpdate, onClose }) {
                         type="number"
                         value={height}
                         min={1}
-                        // onChange={e => setHeight(e.target.value)}
                         onChange={e => setHeight(Number(e.target.value))}
-                        className="border p-2 w-full rounded"
+                        className="border p-2 w-full rounded bg-gray-100 text-gray-500 cursor-not-allowed"
+                        disabled
                     />
                 </div>
             </div>

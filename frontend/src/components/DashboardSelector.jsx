@@ -12,11 +12,24 @@ const DashboardSelector = ({ currentDashboard, onDashboardChange, onCreateDashbo
         loadDashboards()
     }, [])
 
-    const loadDashboards = async () => {
+    const loadDashboards = async (nextSelectId) => {
         try {
             const response = await API.get('/dashboard')
             if (response.data.success) {
-                setDashboards(response.data.dashboards)
+                const list = response.data.dashboards || []
+                setDashboards(list)
+                if (nextSelectId) {
+                    const next = list.find(d => d._id === nextSelectId)
+                    if (next) {
+                        onDashboardChange(next)
+                        return
+                    }
+                }
+                if (!currentDashboard && list.length > 0) {
+                    onDashboardChange(list[0])
+                } else if (currentDashboard && !list.find(d => d._id === currentDashboard._id) && list.length > 0) {
+                    onDashboardChange(list[0])
+                }
             }
         } catch (error) {
             console.error('Error loading dashboards:', error)
@@ -46,6 +59,19 @@ const DashboardSelector = ({ currentDashboard, onDashboardChange, onCreateDashbo
             }
         } catch (error) {
             console.error('Error creating dashboard:', error)
+        }
+    }
+
+    const handleDeleteDashboard = async () => {
+        if (!currentDashboard?._id) return
+        const confirmDelete = window.confirm("Delete this dashboard?")
+        if (!confirmDelete) return
+
+        try {
+            await API.delete(`/dashboard/${currentDashboard._id}`)
+            await loadDashboards()
+        } catch (error) {
+            console.error('Error deleting dashboard:', error)
         }
     }
 
@@ -94,12 +120,21 @@ const DashboardSelector = ({ currentDashboard, onDashboardChange, onCreateDashbo
                 </select>
             </div>
 
-            <button
-                onClick={() => setShowCreateForm(true)}
-                className="bg-amber-600 text-white text-sm px-3 py-1 rounded hover:bg-amber-700"
-            >
-                + New Dashboard
-            </button>
+            <div className="flex items-center space-x-2">
+                <button
+                    onClick={() => setShowCreateForm(true)}
+                    className="bg-amber-600 text-white text-sm px-3 py-1 rounded hover:bg-amber-700"
+                >
+                    + New Dashboard
+                </button>
+                <button
+                    onClick={handleDeleteDashboard}
+                    className="bg-red-500 text-white text-sm px-3 py-1 rounded hover:bg-red-600"
+                    disabled={!currentDashboard?._id}
+                >
+                    Delete
+                </button>
+            </div>
 
             {showCreateForm && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

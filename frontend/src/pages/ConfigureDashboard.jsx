@@ -1,7 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import { Responsive as ResponsiveGridLayout } from "react-grid-layout";
-import "react-grid-layout/css/styles.css";
-import "react-resizable/css/styles.css";
 import { motion } from "framer-motion";
 import API from "../services/api";
 import WidgetRenderer from "../components/WidgetRenderer";
@@ -36,50 +33,21 @@ function useContainerWidth() {
     return { width, containerRef };
 }
 
-function useElementSize() {
-    const ref = useRef(null);
-    const [size, setSize] = useState({ width: 0, height: 0 });
-
-    useEffect(() => {
-        if (!ref.current) return;
-        const node = ref.current;
-
-        const updateSize = () => {
-            const rect = node.getBoundingClientRect();
-            setSize({ width: rect.width, height: rect.height });
-        };
-
-        updateSize();
-
-        const observer = new ResizeObserver(updateSize);
-        observer.observe(node);
-
-        window.addEventListener("resize", updateSize);
-        return () => {
-            observer.disconnect();
-            window.removeEventListener("resize", updateSize);
-        };
-    }, []);
-
-    return { ref, size };
-}
-
 function ConfigureDashboard() {
     const { width, containerRef } = useContainerWidth();
-    const { ref: canvasRef, size: canvasSize } = useElementSize();
 
     const [widgets, setWidgets] = useState([]);
     const [data, setData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
     const [activeWidget, setActiveWidget] = useState(null);
-    const [isDragOver, setIsDragOver] = useState(false);
-    const [currentBreakpoint, setCurrentBreakpoint] = useState("lg");
+    const [dragOverIndex, setDragOverIndex] = useState(null);
+    const [activeAddSlot, setActiveAddSlot] = useState(null);
 
     useEffect(() => {
         API.get("/dashboard/load")
             .then(res => {
                 if (Array.isArray(res.data)) {
-                    setWidgets(res.data);
+                    setWidgets(applyLayout(res.data));
                 } else {
                     setWidgets([]);
                 }
@@ -103,48 +71,31 @@ function ConfigureDashboard() {
             });
     }, []);
 
+    const PER_ROW = 4;
+    const FIXED_W = 3;
+    const FIXED_H = 4;
+
+    function applyLayout(list) {
+        return list.map((widget, index) => ({
+            ...widget,
+            x: (index % PER_ROW) * FIXED_W,
+            y: Math.floor(index / PER_ROW) * FIXED_H,
+            w: FIXED_W,
+            h: FIXED_H
+        }));
+    }
+
     function addWidget(type) {
-        const maxCols = gridCols;
+        const index = widgets.length;
+        const nextX = (index % PER_ROW) * FIXED_W;
+        const nextY = Math.floor(index / PER_ROW) * FIXED_H;
 
-        let defaultWidth;
-        let defaultHeight;
-
-        switch (type) {
-            case "kpi":
-                defaultWidth = 2;
-                defaultHeight = 2;
-                break;
-            case "bar":
-            case "line":
-            case "area":
-            case "scatter":
-                defaultWidth = 5;
-                defaultHeight = 5;
-                break;
-            case "pie":
-                defaultWidth = 4;
-                defaultHeight = 4;
-                break;
-            case "table":
-                defaultWidth = 4;
-                defaultHeight = 4;
-                break;
-            case "date-filter":
-                defaultWidth = 3;
-                defaultHeight = 2;
-                break;
-            default:
-                defaultWidth = 3;
-                defaultHeight = 3;
-        }
-
-        const widgetWidth = Math.min(defaultWidth, maxCols);
         const widget = {
             i: Date.now().toString(),
-            x: 0,
-            y: Infinity,
-            w: widgetWidth,
-            h: defaultHeight,
+            x: nextX,
+            y: nextY,
+            w: FIXED_W,
+            h: FIXED_H,
             minW: 1,
             minH: 1,
             type,
@@ -180,23 +131,16 @@ function ConfigureDashboard() {
                 applyFilter: false
             })
         };
-        setWidgets([...widgets, widget]);
+        setWidgets(applyLayout([...widgets, widget]));
     }
 
     function deleteWidget(id) {
         if (!window.confirm("Remove this widget?")) return;
-        setWidgets(widgets.filter(w => w.i !== id));
+        setWidgets(applyLayout(widgets.filter(w => w.i !== id)));
     }
 
     function updateWidget(updatedWidget) {
-        setWidgets(widgets.map(w => w.i === updatedWidget.i ? updatedWidget : w));
-    }
-
-    function onDrop(layout, layoutItem, event) {
-        const widgetType = event.dataTransfer.getData("widgetType");
-        if (widgetType) {
-            addWidget(widgetType);
-        }
+        setWidgets(applyLayout(widgets.map(w => w.i === updatedWidget.i ? updatedWidget : w)));
     }
 
     function saveDashboard() {
@@ -209,14 +153,19 @@ function ConfigureDashboard() {
     }
 
     const effectiveWidth = width || 1200;
-    const gridCols = effectiveWidth < 768 ? 4 : effectiveWidth < 996 ? 8 : 12;
-    const gridGap = effectiveWidth < 768 ? 8 : 10;
-    const gridRowHeight = effectiveWidth < 768 ? 40 : 48;
-    const gridPadding = effectiveWidth < 768 ? 12 : 16;
-    const gridRows = Math.max(
-        8,
-        Math.ceil((canvasSize.height + gridGap) / (gridRowHeight + gridGap))
-    );
+    const gridGap = effectiveWidth < 768 ? 12 : 16;
+    const placeholders = widgets.length % PER_ROW === 0 ? PER_ROW : PER_ROW - (widgets.length % PER_ROW);
+
+    const quickAddItems = [
+        { type: "kpi", label: "KPI" },
+        { type: "bar", label: "Bar" },
+        { type: "line", label: "Line" },
+        { type: "area", label: "Area" },
+        { type: "pie", label: "Pie" },
+        { type: "scatter", label: "Scatter" },
+        { type: "table", label: "Table" },
+        { type: "date-filter", label: "Date Filter" }
+    ];
 
     return (
         <div className="flex flex-col md:flex-row min-h-screen bg-transparent">
@@ -233,103 +182,34 @@ function ConfigureDashboard() {
                         Configure Dashboard
                     </motion.h1>
 
-                    <div
-                        ref={canvasRef}
-                    className={`min-h-[360px] md:min-h-[600px] border-2 border-dashed rounded-lg p-3 md:p-4 transition-colors relative overflow-hidden ${
-                        isDragOver
-                            ? "border-amber-400 bg-amber-50"
-                            : "border-stone-300 bg-stone-50 hover:bg-stone-100"
-                    }`}
-                    onDragOver={(e) => {
-                        e.preventDefault();
-                        if (currentBreakpoint !== "lg") return;
-                        if (!isDragOver) setIsDragOver(true);
-                    }}
-                    onDragLeave={() => setIsDragOver(false)}
-                    onDrop={(e) => {
-                        e.preventDefault();
-                        setIsDragOver(false);
-                        if (currentBreakpoint !== "lg") return;
-                        const widgetType = e.dataTransfer.getData("widgetType");
-                        if (widgetType) {
-                            addWidget(widgetType);
-                        }
-                    }}
-                    >
-                    <div
-                        className="absolute inset-0 grid pointer-events-none"
-                        style={{
-                            gridTemplateColumns: `repeat(${gridCols}, minmax(0, 1fr))`,
-                            gap: `${gridGap}px`,
-                            padding: `${gridPadding}px`
-                        }}
-                        aria-hidden="true"
-                    >
-                        {Array.from({ length: gridRows * gridCols }).map((_, idx) => (
-                            <div
-                                key={idx}
-                                className="bg-gray-200/70 rounded-md"
-                                style={{ height: `${gridRowHeight}px` }}
-                            />
-                        ))}
-                    </div>
+                    <div className="min-h-[360px] md:min-h-[600px] border-2 border-dashed rounded-lg p-3 md:p-4 transition-colors relative overflow-hidden border-stone-300 bg-stone-50">
+                        {!widgets.length && (
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.3, duration: 0.5 }}
+                                className="text-center text-gray-500 py-16 relative z-10"
+                            >
+                                <p className="text-lg mb-4">No widgets added yet</p>
+                                <p>Drag widgets from the left panel or use the Add buttons.</p>
+                            </motion.div>
+                        )}
 
-                    {!widgets.length && (
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 0.3, duration: 0.5 }}
-                            className="text-center text-gray-500 py-16 relative z-10"
-                        >
-                            <p className="text-lg mb-4">No widgets added yet</p>
-                            <p>Drag widgets from the left panel or use the Add buttons.</p>
-                        </motion.div>
-                    )}
-                        <ResponsiveGridLayout
-                            className="layout relative z-10"
-                        layouts={{ lg: widgets }}
-                        onLayoutChange={(layout) => {
-                            if (currentBreakpoint !== "lg") return;
-                            const updatedWidgets = widgets.map(widget => {
-                                const layoutItem = layout.find(l => l.i === widget.i);
-                                return layoutItem ? { ...widget, ...layoutItem } : widget;
-                            });
-                            setWidgets(updatedWidgets);
-                        }}
-                        onBreakpointChange={(newBreakpoint) => {
-                            setCurrentBreakpoint(newBreakpoint);
-                        }}
-                        onDrop={onDrop}
-                        isDroppable={currentBreakpoint === "lg"}
-                        droppingItem={{ i: "__dropping-elem__", w: 1, h: 1 }}
-                            breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
-                            cols={{ lg: 12, md: 8, sm: 4, xs: 4, xxs: 4 }}
-                            width={width}
-                            rowHeight={gridRowHeight}
-                            draggableHandle=".drag-handle"
-                            compactType={null}
-                            preventCollision={false}
-                        isResizable={currentBreakpoint === "lg"}
-                        resizeHandles={["se", "s", "e"]}
-                        isDraggable={currentBreakpoint === "lg"}
-                            margin={[gridGap, gridGap]}
-                            containerPadding={[gridPadding, gridPadding]}
+                        <div
+                            className="relative z-10 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4"
+                            style={{ gap: `${gridGap}px` }}
                         >
                             {widgets.map((w, index) => (
                                 <div
                                     key={w.i}
-                                className="bg-white rounded-xl shadow-lg border border-stone-200 relative group hover:shadow-2xl transition-shadow overflow-hidden min-w-0 flex flex-col h-full"
+                                    className="bg-white rounded-xl shadow-lg border border-stone-200 relative group hover:shadow-2xl transition-shadow overflow-hidden min-w-0 flex flex-col h-64"
                                 >
                                     <motion.div
                                         initial={{ opacity: 0, y: 40, scale: 0.9 }}
                                         animate={{ opacity: 1, y: 0, scale: 1 }}
-                                        transition={{ duration: 0.5, delay: 0.1 * index }}
+                                        transition={{ duration: 0.5, delay: 0.05 * index }}
                                         className="h-full flex flex-col"
                                     >
-                                        <div className="drag-handle cursor-move bg-gradient-to-r from-amber-100 via-amber-50 to-stone-100 p-2 text-sm text-center font-semibold border-b tracking-wider">
-                                            Drag to Move
-                                        </div>
-
                                         <button
                                             onClick={() => deleteWidget(w.i)}
                                             className="absolute top-3 left-3 bg-rose-500 hover:bg-rose-600 text-white px-3 py-1 text-xs rounded shadow-md transition-colors z-30 opacity-0 group-hover:opacity-100 focus:opacity-100"
@@ -365,7 +245,54 @@ function ConfigureDashboard() {
                                     </motion.div>
                                 </div>
                             ))}
-                        </ResponsiveGridLayout>
+
+                            {Array.from({ length: placeholders }).map((_, idx) => {
+                                const slotIndex = widgets.length + idx
+                                return (
+                                    <div
+                                        key={`slot-${slotIndex}`}
+                                        onClick={() => setActiveAddSlot(activeAddSlot === slotIndex ? null : slotIndex)}
+                                        onDragOver={(e) => {
+                                            e.preventDefault()
+                                            setDragOverIndex(slotIndex)
+                                        }}
+                                        onDragLeave={() => setDragOverIndex(null)}
+                                        onDrop={(e) => {
+                                            e.preventDefault()
+                                            setDragOverIndex(null)
+                                            const widgetType = e.dataTransfer.getData("widgetType")
+                                            if (widgetType) addWidget(widgetType)
+                                        }}
+                                        className={`border-2 border-dashed rounded-xl flex items-center justify-center h-64 text-gray-400 transition-colors cursor-pointer ${
+                                            dragOverIndex === slotIndex ? "border-amber-400 bg-amber-50 text-amber-600" : "border-stone-300 bg-white"
+                                        }`}
+                                    >
+                                        {activeAddSlot === slotIndex ? (
+                                            <div className="grid grid-cols-2 gap-2 p-3 w-full">
+                                                {quickAddItems.map((item) => (
+                                                    <button
+                                                        key={item.type}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation()
+                                                            addWidget(item.type)
+                                                            setActiveAddSlot(null)
+                                                        }}
+                                                        className="text-xs px-2 py-1 rounded border border-stone-200 hover:border-amber-400 hover:bg-amber-50 text-stone-700"
+                                                    >
+                                                        {item.label}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div className="flex flex-col items-center gap-2">
+                                                <div className="text-3xl font-bold">+</div>
+                                                <div className="text-xs">Drag or click to add</div>
+                                            </div>
+                                        )}
+                                    </div>
+                                )
+                            })}
+                        </div>
                     </div>
                 </div>
 

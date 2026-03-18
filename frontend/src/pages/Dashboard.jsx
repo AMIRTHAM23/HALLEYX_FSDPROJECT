@@ -1,9 +1,6 @@
 import { useState, useEffect, useRef } from "react"
 import { Link } from "react-router-dom"
 import { motion } from "framer-motion"
-import { Responsive as ResponsiveGridLayout } from "react-grid-layout"
-import "react-grid-layout/css/styles.css"
-import "react-resizable/css/styles.css"
 import FilterBar from "../components/FilterBar"
 import WidgetRenderer from "../components/WidgetRenderer"
 import DashboardSelector from "../components/DashboardSelector"
@@ -137,10 +134,7 @@ function Dashboard() {
     }, [filter, statusFilter, startDate, endDate])
 
     const effectiveWidth = width || 1200
-    const gridCols = effectiveWidth < 768 ? 4 : effectiveWidth < 996 ? 8 : 12
-    const gridGap = effectiveWidth < 768 ? 8 : 10
-    const gridRowHeight = effectiveWidth < 768 ? 40 : 55
-    const gridPadding = effectiveWidth < 768 ? 12 : 16
+    const gridGap = effectiveWidth < 768 ? 12 : 16
 
     return (
 
@@ -218,45 +212,33 @@ function Dashboard() {
 
             {/* Widgets Grid */}
             {!loading && !error && widgets.length > 0 && (
-                <ResponsiveGridLayout
-                    className="layout"
-                    layouts={{ lg: widgets }}
-                    cols={{ lg: 12, md: 8, sm: 4, xs: 4, xxs: 4 }}
-                    breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
-                    rowHeight={gridRowHeight}
-                    width={width || 1200}
-                    compactType={null}
-                    preventCollision={false}
-                    isDraggable={false}
-                    isResizable={false}
-                    margin={[gridGap, gridGap]}
-                    containerPadding={[gridPadding, gridPadding]}
+                <div
+                    className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4"
+                    style={{ gap: `${gridGap}px` }}
                 >
-
-                 {widgets.map((w, index) => (
-                    <div
-                        key={w.i}
-                        className="bg-white shadow rounded-lg border p-3 min-w-0 flex flex-col h-full"
-                    >
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.5, delay: 0.1 * index }}
-                            className="h-full flex flex-col"
+                    {widgets.map((w, index) => (
+                        <div
+                            key={w.i}
+                            className="bg-white shadow rounded-lg border p-3 min-w-0 flex flex-col h-64"
                         >
-                            <WidgetRenderer
-                                widget={w}
-                                data={data}
-                                onDateFilter={(start, end) => {
-                                    setStartDate(start)
-                                    setEndDate(end)
-                                }}
-                            />
-                        </motion.div>
-                    </div>
-                ))}
-
-                </ResponsiveGridLayout>
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.5, delay: 0.05 * index }}
+                                className="h-full flex flex-col"
+                            >
+                                <WidgetRenderer
+                                    widget={w}
+                                    data={data}
+                                    onDateFilter={(start, end) => {
+                                        setStartDate(start)
+                                        setEndDate(end)
+                                    }}
+                                />
+                            </motion.div>
+                        </div>
+                    ))}
+                </div>
             )}
 
         </div>
